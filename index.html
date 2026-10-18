@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Cyber Runner: Neon Dash</title>
+  <title>Jungle Quest: Temple of Gold</title>
   <style>
     * {
       box-sizing: border-box;
@@ -13,7 +13,7 @@
       -webkit-user-select: none;
     }
     body {
-      background-color: #0b0b1a;
+      background: #0f1b07;
       color: #fff;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       overflow: hidden;
@@ -21,163 +21,186 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
-      touch-action: manipulation;
+      touch-action: none;
     }
-    #gameContainer {
+    #gameWrapper {
       position: relative;
       width: 100vw;
-      max-width: 480px;
+      max-width: 600px;
       height: 100vh;
-      max-height: 850px;
-      background: linear-gradient(180deg, #090a1f 0%, #170d36 100%);
-      box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
+      max-height: 900px;
+      background: #1a3011;
       overflow: hidden;
+      box-shadow: 0 0 25px rgba(0,0,0,0.8);
     }
     canvas {
       display: block;
       width: 100%;
       height: 100%;
     }
-    /* HUD Overlays */
+    /* HUD */
     .hud {
       position: absolute;
-      top: 15px;
-      left: 15px;
-      right: 15px;
+      top: 12px;
+      left: 12px;
+      right: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       pointer-events: none;
       z-index: 10;
-    }
-    .score-box {
-      font-size: 22px;
       font-weight: 800;
-      color: #00f0ff;
-      text-shadow: 0 0 10px #00f0ff;
+      font-size: 16px;
+      text-shadow: 2px 2px 4px #000;
     }
-    .coins-box {
-      font-size: 20px;
-      font-weight: 800;
-      color: #ffd700;
-      text-shadow: 0 0 10px #ffd700;
+    .hud-left { display: flex; gap: 15px; }
+    .heart { color: #ff3344; }
+    .coin-badge { color: #ffd700; }
+    .key-badge { color: #00e5ff; }
+
+    /* On-Screen Mobile Controls */
+    .controls {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 15;
+      pointer-events: none;
     }
-    /* Modals & Popups */
+    .dpad, .action-pad {
+      display: flex;
+      gap: 15px;
+      pointer-events: auto;
+    }
+    .btn-ctrl {
+      width: 62px;
+      height: 62px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      color: #fff;
+      font-size: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
+    .btn-ctrl:active {
+      background: rgba(255, 255, 255, 0.45);
+      transform: scale(0.92);
+    }
+    .btn-jump { background: rgba(0, 200, 83, 0.35); border-color: #00e676; }
+    .btn-atk { background: rgba(255, 61, 0, 0.35); border-color: #ff3d00; }
+
+    /* Modals */
     .modal {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(10, 10, 26, 0.9);
-      backdrop-filter: blur(8px);
+      background: rgba(10, 20, 10, 0.92);
+      backdrop-filter: blur(6px);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 25px;
       text-align: center;
-      z-index: 20;
+      padding: 25px;
+      z-index: 25;
     }
-    .hidden {
-      display: none !important;
-    }
+    .hidden { display: none !important; }
     h1 {
-      font-size: 34px;
-      font-weight: 900;
-      letter-spacing: 2px;
-      color: #ff007f;
-      text-shadow: 0 0 15px #ff007f, 0 0 30px #ff007f;
+      font-size: 30px;
+      color: #ffd700;
+      text-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
       margin-bottom: 10px;
     }
-    p {
-      color: #d1d5db;
-      font-size: 15px;
-      margin-bottom: 25px;
-    }
-    .btn {
-      background: linear-gradient(90deg, #ff007f, #7928ca);
+    p { color: #d7e8cd; font-size: 15px; margin-bottom: 20px; line-height: 1.4; }
+    .btn-menu {
+      background: linear-gradient(180deg, #ffb300, #ff6f00);
       color: #fff;
       border: none;
-      padding: 14px 30px;
-      font-size: 17px;
+      padding: 14px 28px;
+      font-size: 18px;
       font-weight: bold;
       border-radius: 30px;
+      box-shadow: 0 4px 15px rgba(255, 111, 0, 0.5);
       cursor: pointer;
-      box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
-      margin: 8px 0;
       width: 80%;
-      max-width: 260px;
-      transition: transform 0.1s ease;
+      max-width: 250px;
+      margin: 6px 0;
     }
-    .btn:active {
-      transform: scale(0.96);
-    }
+    .btn-menu:active { transform: scale(0.96); }
     .btn-ad {
-      background: linear-gradient(90deg, #00f0ff, #0070f3);
-      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
-    }
-    .btn-secondary {
-      background: #2a2b4a;
-      box-shadow: none;
-      color: #bbb;
-    }
-    /* Ad Simulation Container */
-    #adScreen {
-      z-index: 30;
-      background: #000;
-    }
-    .ad-card {
-      background: #111;
-      border: 1px solid #333;
-      border-radius: 12px;
-      padding: 20px;
-      width: 90%;
-      max-width: 320px;
-      position: relative;
-    }
-    .ad-timer {
-      font-size: 13px;
-      color: #888;
-      margin-bottom: 12px;
+      background: linear-gradient(180deg, #00b0ff, #0070ba);
+      box-shadow: 0 4px 15px rgba(0, 176, 255, 0.5);
     }
   </style>
 </head>
 <body>
 
-<div id="gameContainer">
+<div id="gameWrapper">
+  <!-- HUD -->
   <div class="hud">
-    <div class="score-box" id="scoreDisplay">SCORE: 0</div>
-    <div class="coins-box" id="coinsDisplay">⚡ 0</div>
+    <div class="hud-left">
+      <div id="healthText" class="heart">❤❤❤</div>
+      <div id="coinText" class="coin-badge">💰 0</div>
+      <div id="keyText" class="key-badge">🗝️ Locked</div>
+    </div>
+    <div id="levelText" style="color: #a5d6a7;">STAGE 1</div>
   </div>
 
   <canvas id="gameCanvas"></canvas>
 
+  <!-- Touch Controls -->
+  <div class="controls">
+    <div class="dpad">
+      <div class="btn-ctrl" id="btnLeft">◀</div>
+      <div class="btn-ctrl" id="btnRight">▶</div>
+    </div>
+    <div class="action-pad">
+      <div class="btn-ctrl btn-atk" id="btnAttack">⚔️</div>
+      <div class="btn-ctrl btn-jump" id="btnJump">▲</div>
+    </div>
+  </div>
+
   <!-- Start Screen -->
   <div id="startScreen" class="modal">
-    <h1>CYBER RUNNER</h1>
-    <p>Tap to Jump over Neon Obstacles & collect Power Cores!</p>
-    <button class="btn" id="startBtn">START GAME</button>
+    <h1>JUNGLE QUEST</h1>
+    <p>Find the <b>Golden Key 🗝️</b>, defeat jungle beasts, and reach the ancient door to unlock the next chamber!</p>
+    <button class="btn-menu" id="startBtn">START EXPLORING</button>
   </div>
 
   <!-- Game Over Screen -->
   <div id="gameOverScreen" class="modal hidden">
-    <h1 style="color:#00f0ff; text-shadow:0 0 15px #00f0ff;">GAME OVER</h1>
-    <p id="finalScoreText">Score: 0 | High: 0</p>
-    <button class="btn btn-ad" id="reviveBtn">📺 Watch Ad (+1 Life)</button>
-    <button class="btn" id="restartBtn">PLAY AGAIN</button>
+    <h1 style="color: #ff5252;">DEFEATED!</h1>
+    <p>You fell victim to the temple traps.</p>
+    <button class="btn-menu btn-ad" id="reviveBtn">📺 Watch Ad (+Full Health)</button>
+    <button class="btn-menu" id="restartBtn">TRY AGAIN</button>
   </div>
 
-  <!-- Ad Modal for Monetization -->
-  <div id="adScreen" class="modal hidden">
-    <div class="ad-card">
-      <div class="ad-timer" id="adTimerText">Ad playing... (5s)</div>
-      <div style="height: 180px; background: #1a1a2e; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 8px; margin-bottom: 15px;">
-        <span style="font-size: 32px;">📢</span>
-        <span style="color: #00f0ff; font-weight: bold; margin-top: 8px;">AdMob / Unity Ad</span>
-        <span style="font-size: 11px; color: #888;">Monetization Slot</span>
+  <!-- Stage Cleared Screen -->
+  <div id="clearScreen" class="modal hidden">
+    <h1>STAGE CLEARED!</h1>
+    <p>Incredible agility! You unlocked the secret door to the deeper sanctuary.</p>
+    <button class="btn-menu" id="nextLevelBtn">NEXT CHAMBER ▶</button>
+  </div>
+
+  <!-- Ad Popup Slot -->
+  <div id="adScreen" class="modal hidden" style="z-index: 35; background: #000;">
+    <div style="background: #1c2415; border: 1px solid #4a6332; border-radius: 12px; padding: 25px; width: 85%; max-width: 320px;">
+      <p id="adTimerText" style="color:#aaa; font-size:13px; margin-bottom:12px;">Sponsor Ad (4s)...</p>
+      <div style="height: 160px; background: #0f160a; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:8px; margin-bottom:15px;">
+        <span style="font-size:36px;">🏺</span>
+        <span style="color:#ffd700; font-weight:bold; margin-top:8px;">Monetization Slot</span>
+        <span style="font-size:12px; color:#888;">AdMob / Unity Ad</span>
       </div>
-      <button class="btn btn-secondary" id="closeAdBtn" style="width: 100%; display: none;">Close Ad</button>
+      <button class="btn-menu" id="closeAdBtn" style="width:100%; display:none; background:#2e7d32;">Continue Quest</button>
     </div>
   </div>
 </div>
@@ -185,17 +208,22 @@
 <script>
   const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d');
-  const scoreDisplay = document.getElementById('scoreDisplay');
-  const coinsDisplay = document.getElementById('coinsDisplay');
+  const healthText = document.getElementById('healthText');
+  const coinText = document.getElementById('coinText');
+  const keyText = document.getElementById('keyText');
+  const levelText = document.getElementById('levelText');
+
   const startScreen = document.getElementById('startScreen');
   const gameOverScreen = document.getElementById('gameOverScreen');
+  const clearScreen = document.getElementById('clearScreen');
   const adScreen = document.getElementById('adScreen');
+
   const startBtn = document.getElementById('startBtn');
   const restartBtn = document.getElementById('restartBtn');
   const reviveBtn = document.getElementById('reviveBtn');
+  const nextLevelBtn = document.getElementById('nextLevelBtn');
   const closeAdBtn = document.getElementById('closeAdBtn');
   const adTimerText = document.getElementById('adTimerText');
-  const finalScoreText = document.getElementById('finalScoreText');
 
   let width, height;
   function resize() {
@@ -205,7 +233,7 @@
   window.addEventListener('resize', resize);
   resize();
 
-  // Web Audio Context (No external audio file needed)
+  // Web Audio for retro sound effects
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   function playSound(type) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -216,299 +244,396 @@
     const now = audioCtx.currentTime;
 
     if (type === 'jump') {
-      osc.frequency.setValueAtTime(150, now);
-      osc.frequency.exponentialRampToValueAtTime(450, now + 0.15);
+      osc.frequency.setValueAtTime(200, now);
+      osc.frequency.linearRampToValueAtTime(450, now + 0.12);
       gain.gain.setValueAtTime(0.2, now);
-      gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
-      osc.start(now);
-      osc.stop(now + 0.15);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+      osc.start(now); osc.stop(now + 0.12);
+    } else if (type === 'coin') {
+      osc.frequency.setValueAtTime(500, now);
+      osc.frequency.setValueAtTime(800, now + 0.08);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.16);
+      osc.start(now); osc.stop(now + 0.16);
     } else if (type === 'hit') {
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(120, now);
-      osc.frequency.linearRampToValueAtTime(30, now + 0.25);
+      osc.frequency.setValueAtTime(140, now);
+      osc.frequency.linearRampToValueAtTime(40, now + 0.2);
       gain.gain.setValueAtTime(0.3, now);
-      gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
-      osc.start(now);
-      osc.stop(now + 0.25);
-    } else if (type === 'coin') {
-      osc.frequency.setValueAtTime(600, now);
-      osc.frequency.setValueAtTime(900, now + 0.08);
-      gain.gain.setValueAtTime(0.15, now);
-      gain.gain.linearRampToValueAtTime(0.01, now + 0.16);
-      osc.start(now);
-      osc.stop(now + 0.16);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+      osc.start(now); osc.stop(now + 0.2);
+    } else if (type === 'slash') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(400, now);
+      osc.frequency.linearRampToValueAtTime(100, now + 0.1);
+      gain.gain.setValueAtTime(0.25, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+      osc.start(now); osc.stop(now + 0.1);
     }
   }
 
-  // Game States
+  // Inputs
+  const keys = { left: false, right: false, jump: false };
+  function attachTouch(btn, onDown, onUp) {
+    btn.addEventListener('touchstart', (e) => { e.preventDefault(); onDown(); });
+    btn.addEventListener('touchend', (e) => { e.preventDefault(); onUp(); });
+    btn.addEventListener('mousedown', onDown);
+    btn.addEventListener('mouseup', onUp);
+  }
+  attachTouch(document.getElementById('btnLeft'), () => keys.left = true, () => keys.left = false);
+  attachTouch(document.getElementById('btnRight'), () => keys.right = true, () => keys.right = false);
+  attachTouch(document.getElementById('btnJump'), () => player.jump(), () => {});
+  attachTouch(document.getElementById('btnAttack'), () => player.attack(), () => {});
+
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = true;
+    if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = true;
+    if (e.code === 'ArrowUp' || e.code === 'KeyW' || e.code === 'Space') player.jump();
+    if (e.code === 'KeyF' || e.code === 'KeyE') player.attack();
+  });
+  window.addEventListener('keyup', (e) => {
+    if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
+    if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = false;
+  });
+
+  // Level & Camera state
+  let currentStage = 1;
+  let cameraX = 0;
   let isRunning = false;
-  let score = 0;
-  let coins = 0;
-  let highScore = localStorage.getItem('cr_highscore') || 0;
-  let speed = 5;
-  let frame = 0;
-  let hasRevived = false;
 
-  // Ground Setup
-  const groundY = () => height - 120;
-
-  // Player Object
+  // Player Character
   const player = {
-    x: 50,
-    y: 0,
-    w: 32,
-    h: 42,
+    x: 60,
+    y: 300,
+    w: 28,
+    h: 40,
+    vx: 0,
     vy: 0,
-    gravity: 0.85,
-    jumpStrength: -14,
+    speed: 3.8,
+    gravity: 0.6,
+    jumpPower: -12.5,
     grounded: false,
-    trail: [],
-    reset() {
-      this.y = groundY() - this.h;
-      this.vy = 0;
-      this.grounded = true;
-      this.trail = [];
-    },
+    facing: 1,
+    health: 3,
+    coins: 0,
+    hasKey: false,
+    isAttacking: false,
+    attackTimer: 0,
     jump() {
       if (this.grounded) {
-        this.vy = this.jumpStrength;
+        this.vy = this.jumpPower;
         this.grounded = false;
         playSound('jump');
       }
     },
+    attack() {
+      if (this.attackTimer <= 0) {
+        this.isAttacking = true;
+        this.attackTimer = 18;
+        playSound('slash');
+      }
+    },
     update() {
+      if (keys.left) { this.vx = -this.speed; this.facing = -1; }
+      else if (keys.right) { this.vx = this.speed; this.facing = 1; }
+      else { this.vx = 0; }
+
       this.vy += this.gravity;
+      this.x += this.vx;
       this.y += this.vy;
 
-      if (this.y >= groundY() - this.h) {
-        this.y = groundY() - this.h;
-        this.vy = 0;
-        this.grounded = true;
-      }
-
-      // Record visual trail
-      if (frame % 2 === 0) {
-        this.trail.push({ x: this.x, y: this.y, alpha: 0.5 });
-        if (this.trail.length > 5) this.trail.shift();
+      if (this.attackTimer > 0) {
+        this.attackTimer--;
+        if (this.attackTimer === 0) this.isAttacking = false;
       }
     },
     draw() {
-      // Neon Trail
-      this.trail.forEach(t => {
-        ctx.fillStyle = `rgba(0, 240, 255, ${t.alpha})`;
-        ctx.fillRect(t.x, t.y, this.w, this.h);
-        t.alpha -= 0.08;
-      });
+      const px = this.x - cameraX;
+      // Body
+      ctx.fillStyle = '#ffb300';
+      ctx.fillRect(px, this.y, this.w, this.h);
 
-      // Character Body (Cyberpunk Cube)
-      ctx.shadowBlur = 15;
-      ctx.shadowColor = '#00f0ff';
-      ctx.fillStyle = '#00f0ff';
-      ctx.fillRect(this.x, this.y, this.w, this.h);
+      // Hat / Headband
+      ctx.fillStyle = '#d84315';
+      ctx.fillRect(px, this.y + 4, this.w, 8);
 
-      // Inner Core Accent
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(this.x + 8, this.y + 10, 16, 12);
+      // Eye
+      ctx.fillStyle = '#000';
+      const eyeX = this.facing === 1 ? px + this.w - 8 : px + 4;
+      ctx.fillRect(eyeX, this.y + 14, 4, 4);
+
+      // Attack Sword Slash
+      if (this.isAttacking) {
+        ctx.fillStyle = '#00e5ff';
+        const slashX = this.facing === 1 ? px + this.w : px - 22;
+        ctx.fillRect(slashX, this.y + 12, 22, 12);
+      }
     }
   };
 
-  // Obstacles & Coins
-  let obstacles = [];
-  let pickups = [];
+  // World Elements
+  let platforms = [];
+  let enemies = [];
+  let coins = [];
+  let keyItem = null;
+  let exitDoor = null;
 
-  function spawnObstacle() {
-    const isDrone = Math.random() > 0.65;
-    const obsHeight = isDrone ? 30 : 45 + Math.random() * 20;
-    const obsY = isDrone ? groundY() - 75 : groundY() - obsHeight;
-    obstacles.push({
-      x: width + 40,
-      y: obsY,
-      w: 24,
-      h: obsHeight,
-      isDrone: isDrone
-    });
+  function loadStage(stage) {
+    player.x = 60;
+    player.y = 200;
+    player.vx = 0;
+    player.vy = 0;
+    player.hasKey = false;
+    cameraX = 0;
+    keyText.innerHTML = "🗝️ Locked";
+    levelText.innerHTML = `STAGE ${stage}`;
+
+    // Map Design
+    platforms = [
+      { x: 0, y: height - 60, w: 2200, h: 60, type: 'ground' },
+      { x: 220, y: height - 140, w: 140, h: 20 },
+      { x: 420, y: height - 210, w: 130, h: 20 },
+      { x: 620, y: height - 160, w: 150, h: 20 },
+      { x: 880, y: height - 240, w: 140, h: 20 },
+      { x: 1100, y: height - 180, w: 160, h: 20 },
+      { x: 1350, y: height - 220, w: 150, h: 20 },
+      { x: 1600, y: height - 150, w: 180, h: 20 }
+    ];
+
+    enemies = [
+      { x: 450, y: height - 240, w: 26, h: 26, vx: 1.4, minX: 420, maxX: 530, alive: true },
+      { x: 650, y: height - 190, w: 26, h: 26, vx: 1.6, minX: 620, maxX: 750, alive: true },
+      { x: 1120, y: height - 210, w: 26, h: 26, vx: 1.8, minX: 1100, maxX: 1240, alive: true },
+      { x: 1400, y: height - 90, w: 26, h: 26, vx: 2.0, minX: 1300, maxX: 1600, alive: true }
+    ];
+
+    coins = [
+      { x: 250, y: height - 170, collected: false },
+      { x: 470, y: height - 245, collected: false },
+      { x: 670, y: height - 195, collected: false },
+      { x: 920, y: height - 275, collected: false },
+      { x: 1150, y: height - 215, collected: false },
+      { x: 1650, y: height - 185, collected: false }
+    ];
+
+    keyItem = { x: 940, y: height - 275, w: 22, h: 22, collected: false };
+    exitDoor = { x: 1720, y: height - 220, w: 40, h: 70 };
   }
 
-  function spawnPickup() {
-    pickups.push({
-      x: width + 40,
-      y: groundY() - 60 - Math.random() * 40,
-      r: 8
-    });
-  }
+  function updateGame() {
+    if (!isRunning) return;
 
-  // Neon Grid Background
-  let bgOffset = 0;
-  function drawBackground() {
-    bgOffset = (bgOffset + speed * 0.4) % 40;
-    ctx.strokeStyle = 'rgba(121, 40, 202, 0.2)';
-    ctx.lineWidth = 1;
+    player.update();
 
-    for (let x = -bgOffset; x < width; x += 40) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
-      ctx.stroke();
+    // Horizontal Platform Collisions
+    player.grounded = false;
+    for (const p of platforms) {
+      if (
+        player.x < p.x + p.w &&
+        player.x + player.w > p.x &&
+        player.y + player.h <= p.y + player.vy + 2 &&
+        player.y + player.h + player.vy >= p.y
+      ) {
+        player.y = p.y - player.h;
+        player.vy = 0;
+        player.grounded = true;
+      }
     }
 
-    // Floor Base Line
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = '#ff007f';
-    ctx.strokeStyle = '#ff007f';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(0, groundY());
-    ctx.lineTo(width, groundY());
-    ctx.stroke();
-    ctx.shadowBlur = 0;
+    // Camera follow player smoothly
+    const targetCamX = player.x - width * 0.35;
+    cameraX += (targetCamX - cameraX) * 0.08;
+    if (cameraX < 0) cameraX = 0;
 
-    // Floor Fill
-    ctx.fillStyle = '#070817';
-    ctx.fillRect(0, groundY(), width, height - groundY());
+    // Coins
+    for (const c of coins) {
+      if (!c.collected && Math.hypot(player.x + player.w/2 - c.x, player.y + player.h/2 - c.y) < 26) {
+        c.collected = true;
+        player.coins += 10;
+        coinText.innerHTML = `💰 ${player.coins}`;
+        playSound('coin');
+      }
+    }
+
+    // Key
+    if (!keyItem.collected && Math.hypot(player.x + player.w/2 - keyItem.x, player.y + player.h/2 - keyItem.y) < 28) {
+      keyItem.collected = true;
+      player.hasKey = true;
+      keyText.innerHTML = "🗝️ Unlocked!";
+      keyText.style.color = "#ffd700";
+      playSound('coin');
+    }
+
+    // Door / Level Exit
+    if (
+      player.hasKey &&
+      player.x < exitDoor.x + exitDoor.w &&
+      player.x + player.w > exitDoor.x &&
+      player.y < exitDoor.y + exitDoor.h &&
+      player.y + player.h > exitDoor.y
+    ) {
+      isRunning = false;
+      clearScreen.classList.remove('hidden');
+      return;
+    }
+
+    // Enemies
+    for (const e of enemies) {
+      if (!e.alive) continue;
+      e.x += e.vx;
+      if (e.x > e.maxX || e.x < e.minX) e.vx *= -1;
+
+      // Sword attack kill
+      if (player.isAttacking) {
+        const slashBox = player.facing === 1 ? { x: player.x + player.w, w: 22 } : { x: player.x - 22, w: 22 };
+        if (
+          slashBox.x < e.x + e.w &&
+          slashBox.x + slashBox.w > e.x &&
+          player.y < e.y + e.h &&
+          player.y + player.h > e.y
+        ) {
+          e.alive = false;
+          playSound('hit');
+          continue;
+        }
+      }
+
+      // Player collision damage
+      if (
+        player.x < e.x + e.w &&
+        player.x + player.w > e.x &&
+        player.y < e.y + e.h &&
+        player.y + player.h > e.y
+      ) {
+        player.health--;
+        playSound('hit');
+        updateHearts();
+        player.y -= 15;
+        player.vy = -6;
+
+        if (player.health <= 0) {
+          gameOver();
+          return;
+        }
+      }
+    }
+
+    // Fall in abyss
+    if (player.y > height) {
+      player.health = 0;
+      updateHearts();
+      gameOver();
+      return;
+    }
   }
 
-  // Main Loop
-  function gameLoop() {
-    if (!isRunning) return;
-    frame++;
+  function updateHearts() {
+    let hearts = '';
+    for (let i = 0; i < player.health; i++) hearts += '❤';
+    healthText.innerHTML = hearts || '☠';
+  }
+
+  function drawGame() {
     ctx.clearRect(0, 0, width, height);
 
-    drawBackground();
+    // Parallax Jungle background
+    ctx.fillStyle = '#10230b';
+    ctx.fillRect(0, 0, width, height);
 
-    // Player Update
-    player.update();
-    player.draw();
-
-    // Spawning Logic
-    const spawnRate = Math.max(60, 130 - Math.floor(score / 50));
-    if (frame % spawnRate === 0) spawnObstacle();
-    if (frame % 110 === 0) spawnPickup();
-
-    // Move & Draw Obstacles
-    for (let i = obstacles.length - 1; i >= 0; i--) {
-      const o = obstacles[i];
-      o.x -= speed;
-
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = '#ff0055';
-      ctx.fillStyle = o.isDrone ? '#ff00aa' : '#ff0055';
-      ctx.fillRect(o.x, o.y, o.w, o.h);
-      ctx.shadowBlur = 0;
-
-      // Collision Check
-      if (
-        player.x < o.x + o.w &&
-        player.x + player.w > o.x &&
-        player.y < o.y + o.h &&
-        player.y + player.h > o.y
-      ) {
-        gameOver();
-        return;
-      }
-
-      if (o.x + o.w < -10) obstacles.splice(i, 1);
+    // Ancient platforms
+    for (const p of platforms) {
+      ctx.fillStyle = p.type === 'ground' ? '#2e4919' : '#5d4037';
+      ctx.fillRect(p.x - cameraX, p.y, p.w, p.h);
+      // Grass top
+      ctx.fillStyle = '#66bb6a';
+      ctx.fillRect(p.x - cameraX, p.y, p.w, 6);
     }
 
-    // Move & Draw Coins
-    for (let i = pickups.length - 1; i >= 0; i--) {
-      const p = pickups[i];
-      p.x -= speed;
+    // Golden Key
+    if (!keyItem.collected) {
+      ctx.font = '22px Arial';
+      ctx.fillText('🗝️', keyItem.x - cameraX, keyItem.y);
+    }
 
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = '#ffd700';
+    // Exit Temple Door
+    ctx.fillStyle = player.hasKey ? '#ffd700' : '#4e342e';
+    ctx.fillRect(exitDoor.x - cameraX, exitDoor.y, exitDoor.w, exitDoor.h);
+    ctx.fillStyle = '#21130d';
+    ctx.fillRect(exitDoor.x - cameraX + 6, exitDoor.y + 10, exitDoor.w - 12, exitDoor.h - 10);
+
+    // Coins
+    for (const c of coins) {
+      if (c.collected) continue;
       ctx.fillStyle = '#ffd700';
       ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.arc(c.x - cameraX, c.y, 7, 0, Math.PI * 2);
       ctx.fill();
-      ctx.shadowBlur = 0;
-
-      // Collect
-      const dist = Math.hypot(player.x + player.w / 2 - p.x, player.y + player.h / 2 - p.y);
-      if (dist < player.w / 2 + p.r) {
-        coins += 1;
-        score += 15;
-        coinsDisplay.textContent = `⚡ ${coins}`;
-        playSound('coin');
-        pickups.splice(i, 1);
-      } else if (p.x < -10) {
-        pickups.splice(i, 1);
-      }
     }
 
-    // Progression
-    if (frame % 5 === 0) {
-      score++;
-      scoreDisplay.textContent = `SCORE: ${score}`;
-      if (score % 100 === 0) speed += 0.4;
+    // Enemies (Forest Spiders / Beasts)
+    for (const e of enemies) {
+      if (!e.alive) continue;
+      ctx.fillStyle = '#d32f2f';
+      ctx.fillRect(e.x - cameraX, e.y, e.w, e.h);
+      // Red eyes
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(e.x - cameraX + 4, e.y + 6, 4, 4);
+      ctx.fillRect(e.x - cameraX + 16, e.y + 6, 4, 4);
     }
 
-    requestAnimationFrame(gameLoop);
+    // Player
+    player.draw();
   }
 
-  // Tap Controls
-  window.addEventListener('keydown', (e) => {
-    if (e.code === 'Space') player.jump();
-  });
-  canvas.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    player.jump();
-  }, { passive: false });
-  canvas.addEventListener('mousedown', () => player.jump());
+  function gameLoop() {
+    updateGame();
+    drawGame();
+    if (isRunning) requestAnimationFrame(gameLoop);
+  }
 
   function startGame() {
     startScreen.classList.add('hidden');
     gameOverScreen.classList.add('hidden');
-    score = 0;
-    speed = 5.5;
-    obstacles = [];
-    pickups = [];
-    hasRevived = false;
-    reviveBtn.classList.remove('hidden');
-    player.reset();
+    clearScreen.classList.add('hidden');
+    player.health = 3;
+    updateHearts();
+    loadStage(currentStage);
     isRunning = true;
     requestAnimationFrame(gameLoop);
   }
 
   function gameOver() {
     isRunning = false;
-    playSound('hit');
-    if (score > highScore) {
-      highScore = score;
-      localStorage.setItem('cr_highscore', highScore);
-    }
-    finalScoreText.innerHTML = `Score: <b>${score}</b> | Best: <b>${highScore}</b><br>Cores: ⚡ ${coins}`;
     gameOverScreen.classList.remove('hidden');
   }
 
-  // Ad / Monetization Integration
-  function triggerAd(isRewarded = false) {
+  // Ad simulation for monetization
+  function showAd(rewarded = false) {
     adScreen.classList.remove('hidden');
     closeAdBtn.style.display = 'none';
-    let timeLeft = 4;
-    adTimerText.textContent = `Ad playing... (${timeLeft}s)`;
+    let count = 4;
+    adTimerText.innerHTML = `Sponsor Video (${count}s)...`;
 
-    const countdown = setInterval(() => {
-      timeLeft--;
-      if (timeLeft > 0) {
-        adTimerText.textContent = `Ad playing... (${timeLeft}s)`;
+    const timer = setInterval(() => {
+      count--;
+      if (count > 0) {
+        adTimerText.innerHTML = `Sponsor Video (${count}s)...`;
       } else {
-        clearInterval(countdown);
-        adTimerText.textContent = `Reward ready!`;
+        clearInterval(timer);
+        adTimerText.innerHTML = "Reward ready!";
         closeAdBtn.style.display = 'block';
       }
     }, 1000);
 
     closeAdBtn.onclick = () => {
       adScreen.classList.add('hidden');
-      if (isRewarded) {
-        // Clear immediate obstacles ahead and revive
-        obstacles = obstacles.filter(o => o.x > player.x + 180);
-        player.reset();
-        isRunning = true;
-        hasRevived = true;
-        reviveBtn.classList.add('hidden');
+      if (rewarded) {
+        player.health = 3;
+        updateHearts();
+        player.y = 200;
+        player.vy = 0;
         gameOverScreen.classList.add('hidden');
+        isRunning = true;
         requestAnimationFrame(gameLoop);
       }
     };
@@ -516,20 +641,18 @@
 
   startBtn.addEventListener('click', startGame);
   restartBtn.addEventListener('click', () => {
-    // Show normal interstitial ad every 2 games
-    if (Math.random() > 0.4) {
-      triggerAd(false);
-      closeAdBtn.onclick = () => {
-        adScreen.classList.add('hidden');
-        startGame();
-      };
-    } else {
+    // Show interstitial ad every retry
+    showAd(false);
+    closeAdBtn.onclick = () => {
+      adScreen.classList.add('hidden');
       startGame();
-    }
+    };
   });
 
-  reviveBtn.addEventListener('click', () => {
-    triggerAd(true);
+  reviveBtn.addEventListener('click', () => showAd(true));
+  nextLevelBtn.addEventListener('click', () => {
+    currentStage++;
+    startGame();
   });
 </script>
 </body>
